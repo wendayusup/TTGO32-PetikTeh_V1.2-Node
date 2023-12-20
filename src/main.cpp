@@ -1,4 +1,4 @@
-/* NODE Mesin Petik V1.2
+/* NODE Mesin Petik V1.2 (1)
    WENDA YUSUP
    PT.MAKERINDO PRIMA SOLUSI*/
 
@@ -60,12 +60,10 @@ String macAddress = "";
 
 //-----Payload Data
 String PAYLOAD = "";
-String NodeID = "MPGMBG0823001";
-// String RepeaterID = "nan";
-String RepeaterID = "RPGMBG0823001";
+String NodeID = "MPGMBG082300(nan)";
+String RepeaterID = "nan";
 int RepeaterRSSI = -200;
-// String OtherNodeID = "nan";
-String OtherNodeID = "MPGMBG0823003";
+String OtherNodeID = "nan";
 int OtherNodeRSSI = -200;
 String RSSI = "nan";
 String Latitude = "0";
@@ -92,8 +90,10 @@ byte NodepetikA = 0xA0;
 bool noderptmacval = true;
 bool noderptpayloadval = false;
 bool nodetoother = false;
+bool success = false;
 int x = 0;
 int y = 0;
+int mac = 0;
 
 //---------OLED
 #include <Wire.h>
@@ -220,38 +220,129 @@ void onReceive(int packetSize)
     return;
   }
 
-  // COMMUNICATION NODE TO NODE
-  if (recipient != NodepetikA && recipient != NodeNetral)
-  {
-    // Serial.println("This message is not for me().");
-    ;
-    return;
-  }
+  // // COMMUNICATION NODE TO NODE
+  // if (recipient != NodepetikA && recipient != NodeNetral)
+  // {
+  //   // Serial.println("This message is not for me().");
+  //   ;
+  //   return;
+  // }
 
-  if (incoming == "RPTMACVALID")
+  if (incoming == macAddress + " " + "1")
   {
-    RepeaterID = "RPGMBG0823001";
+    Serial.println(incoming);
     RepeaterRSSI = LoRa.packetRssi();
+    RSSI = RepeaterRSSI;
+    mac++;
+    digitalWrite(ledlora, HIGH);
+    delay(200);
+    digitalWrite(ledlora, LOW);
+    if (mac == 2)
+    {
+      RepeaterID = "RPGMBG0823001";
+      NodeID = "MPGMBG0823001";
+      noderptmacval = false;
+      noderptpayloadval = true;
+      success = true;
+    }
   }
 
-  // Ke Node masih belum
-  else if (incoming == "NODE")
+  if (incoming == macAddress + " " + "2")
   {
-    OtherNodeID = "MPGMBG082300(nan)";
-    OtherNodeRSSI = LoRa.packetRssi();
+    Serial.println(incoming);
+    RepeaterRSSI = LoRa.packetRssi();
+    RSSI = RepeaterRSSI;
+    mac++;
+    digitalWrite(ledlora, HIGH);
+    delay(200);
+    digitalWrite(ledlora, LOW);
+    if (mac == 2)
+    {
+      RepeaterID = "RPGMBG0823001";
+      NodeID = "MPGMBG0823002";
+      noderptmacval = false;
+      noderptpayloadval = true;
+      success = true;
+    }
   }
 
-  if (RepeaterRSSI > OtherNodeRSSI)
+  if (incoming == macAddress + " " + "3")
   {
-    delay(100);
-    x++;
-    Serial.println(String() + incoming + " = " + RepeaterRSSI + " = " + "Ke " + x);
+    Serial.println(incoming);
+    RepeaterRSSI = LoRa.packetRssi();
+    RSSI = RepeaterRSSI;
+    mac++;
+    digitalWrite(ledlora, HIGH);
+    delay(200);
+    digitalWrite(ledlora, LOW);
+    if (mac == 2)
+    {
+      RepeaterID = "RPGMBG0823001";
+      NodeID = "MPGMBG0823003";
+      noderptmacval = false;
+      noderptpayloadval = true;
+      success = true;
+    }
   }
-  else
+
+  if (incoming == macAddress + " " + "4")
   {
-    delay(100);
-    y++;
-    Serial.println(String() + incoming + " = " + OtherNodeRSSI + "=" + "Ke " + y);
+    Serial.println(incoming);
+    RepeaterRSSI = LoRa.packetRssi();
+    RSSI = RepeaterRSSI;
+    mac++;
+    digitalWrite(ledlora, HIGH);
+    delay(200);
+    digitalWrite(ledlora, LOW);
+    if (mac == 2)
+    {
+      RepeaterID = "RPGMBG0823001";
+      NodeID = "MPGMBG0823004";
+      noderptmacval = false;
+      noderptpayloadval = true;
+      success = true;
+    }
+  }
+
+  if (incoming == macAddress + " " + "5")
+  {
+    Serial.println(incoming);
+    RepeaterRSSI = LoRa.packetRssi();
+    RSSI = RepeaterRSSI;
+    mac++;
+    digitalWrite(ledlora, HIGH);
+    delay(200);
+    digitalWrite(ledlora, LOW);
+    if (mac == 2)
+    {
+      RepeaterID = "RPGMBG0823001";
+      NodeID = "MPGMBG0823005";
+      noderptmacval = false;
+      noderptpayloadval = true;
+      success = true;
+    }
+  }
+
+  if (success)
+  {
+    if (NodeID == "MPGMBG0823001" && incoming == "success 1")
+    {
+      Serial.println(incoming);
+       RepeaterRSSI = LoRa.packetRssi();
+    RSSI = RepeaterRSSI;
+      digitalWrite(ledlora, HIGH);
+      delay(200);
+      digitalWrite(ledlora, LOW);
+    }
+    else if (NodeID == "MPGMBG0823002" && incoming == "success 2")
+    {
+      Serial.println(incoming);
+       RepeaterRSSI = LoRa.packetRssi();
+    RSSI = RepeaterRSSI;
+      digitalWrite(ledlora, HIGH);
+      delay(200);
+      digitalWrite(ledlora, LOW);
+    }
   }
 }
 
@@ -281,22 +372,22 @@ void mpudata()
   pitch = pitch - pitch_calibrate;
   yaw = yaw - yaw_calibrate;
   // Serial.println(pitch);
-  if (pitch < -3)
-  {
-    digitalWrite(ledkiri, HIGH);
-  }
-  else
-  {
-    digitalWrite(ledkiri, LOW);
-  }
-  if (pitch > 3)
-  {
-    digitalWrite(ledkanan, HIGH);
-  }
-  else
-  {
-    digitalWrite(ledkanan, LOW);
-  }
+  // if (pitch < -3)
+  // {
+  //   digitalWrite(ledkiri, HIGH);
+  // }
+  // else
+  // {
+  //   digitalWrite(ledkiri, LOW);
+  // }
+  // if (pitch > 3)
+  // {
+  //   digitalWrite(ledkanan, HIGH);
+  // }
+  // else
+  // {
+  //   digitalWrite(ledkanan, LOW);
+  // }
 }
 
 /*---------Batt*/
@@ -325,6 +416,26 @@ void gpsdata()
         digitalWrite(ledgps, LOW);
         //     Serial.println("Nyarii..");
       }
+}
+
+/*---------Display*/
+void displaydata()
+{
+  int BatteryPercent = axp.getBattVoltage();
+  BatteryPercent = map(BatteryPercent, 0, 4200, 0, 100);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println(String() + "    " + NodeID);
+  display.println(String() + "---------------------");
+  display.println(String() + "Uplink: " + RepeaterID);
+  display.println(String() + "Neigh : " + OtherNodeID);
+  display.println(String() + "RSSI  : " + RSSI);
+  display.println(String() + "Lat   : " + Latitude);
+  display.println(String() + "Lon   : " + Longitude);
+  display.println(String() + "Batt  : " + BatteryPercent + " %");
+  display.display();
 }
 
 bool isMACAddressValidA(const String &mac)
@@ -362,22 +473,6 @@ bool isMACAddressValidB(const String &mac)
   return isValid;
 }
 
-//------------Proc MAc Address Validation-----------//
-void macvalidation()
-{
-  Serial.print("Mengecek MAC address: ");
-  Serial.println(macAddress);
-
-  if (isMACAddressValidA(macAddress) || isMACAddressValidB(macAddress))
-  {
-    Serial.println("MAC address valid: " + macAddress);
-  }
-  else
-  {
-    Serial.println("MAC address tidak valid: " + macAddress);
-  }
-}
-
 void loop()
 {
 
@@ -386,8 +481,9 @@ void loop()
   gpsdata();
   mpudata();
   batterydata();
-  // macvalidation();
+  displaydata();
 
+  // macvalidation();
   // PAYLOAD
   PAYLOAD = String() +
             NodeID +
@@ -419,45 +515,26 @@ void loop()
             VBatt +
             ",*";
 
-  RSSI = LoRa.packetRssi();
-  if (RSSI = -157)
-  {
-    RSSI = "nan";
-  }
-
-  int BatteryPercent = axp.getBattVoltage();
-  BatteryPercent = map(BatteryPercent, 0, 4200, 0, 100);
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-  display.println(String() + "    " + NodeID);
-  display.println(String() + "---------------------");
-  display.println(String() + "Uplink: " + RepeaterID);
-  display.println(String() + "Neigh : " + OtherNodeID);
-  display.println(String() + "RSSI  : " + RSSI);
-  display.println(String() + "Lat   : " + Latitude);
-  display.println(String() + "Lon   : " + Longitude);
-  display.println(String() + "Batt  : " + BatteryPercent + " %");
-  display.display();
-
+  // PENGIRIMAN
   unsigned long sekarang = millis();
-
   if (noderptmacval)
   {
     if (sekarang - awal >= 5000)
     {
       awal = sekarang;
-      String message1 = macAddress;
-      String message2 = "22:c6:55:67:a:43";
-      String message3 = "33:b5:55:d8:a:30";
-      String message4 = "43:c2:22:a3:c8:33";
-      String message5 = "45:c6:32:a3:f8:33";  
-      sendMessage(message5, Noderepeater, NodepetikA);
+      sendMessage(macAddress, Noderepeater, NodepetikA);
+    }
+  }
+
+  if (noderptpayloadval)
+  {
+    if (sekarang - awal >= 5000)
+    {
+      awal = sekarang;
+      sendMessage(PAYLOAD, Noderepeater, NodepetikA);
     }
   }
 
   // PENERIMAAN
-  // Serial.println(incoming);
   onReceive(LoRa.parsePacket());
 }
