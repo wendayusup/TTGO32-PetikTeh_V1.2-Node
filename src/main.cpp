@@ -328,8 +328,8 @@ void onReceive(int packetSize)
     if (NodeID == "MPGMBG0823001" && incoming == "success 1")
     {
       Serial.println(incoming);
-       RepeaterRSSI = LoRa.packetRssi();
-    RSSI = RepeaterRSSI;
+      RepeaterRSSI = LoRa.packetRssi();
+      RSSI = RepeaterRSSI;
       digitalWrite(ledlora, HIGH);
       delay(200);
       digitalWrite(ledlora, LOW);
@@ -337,8 +337,8 @@ void onReceive(int packetSize)
     else if (NodeID == "MPGMBG0823002" && incoming == "success 2")
     {
       Serial.println(incoming);
-       RepeaterRSSI = LoRa.packetRssi();
-    RSSI = RepeaterRSSI;
+      RepeaterRSSI = LoRa.packetRssi();
+      RSSI = RepeaterRSSI;
       digitalWrite(ledlora, HIGH);
       delay(200);
       digitalWrite(ledlora, LOW);
@@ -537,4 +537,5 @@ void loop()
 
   // PENERIMAAN
   onReceive(LoRa.parsePacket());
+  Serial.println(PAYLOAD);
 }
